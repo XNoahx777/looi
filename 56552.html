@@ -1,0 +1,183 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TikTok LIVE</title>
+    <meta name="description" content="Un lector de chat para TikTok LIVE utilizando TikTok-Live-Connector y Socket.IO.">
+    <meta name="keywords" content="TikTok, Live, Chat, Regalos, Transmisión, API, Node.js, JavaScript">
+
+    <link rel="stylesheet" href="style.css">
+    <style>
+        body {
+            font-family: 'Segoe UI', sans-serif;
+            background: linear-gradient(135deg, #000000, #1c1c1c);
+            color: #ffffff;
+            margin: 0;
+            padding: 0;
+        }
+
+        .inputFields {
+            display: flex;
+            justify-content: center;
+            padding: 1em;
+            gap: 10px;
+        }
+
+        input[type="text"], input[type="file"], input[type="button"], button {
+            padding: 10px;
+            border: none;
+            border-radius: 8px;
+            outline: none;
+            font-size: 1em;
+        }
+
+        input[type="text"] {
+            width: 200px;
+        }
+
+        input[type="button"], button {
+            background: #ff0050;
+            color: white;
+            cursor: pointer;
+            transition: transform 0.2s, background 0.3s;
+        }
+
+        input[type="button"]:hover, button:hover {
+            background: #e60048;
+            transform: scale(1.05);
+        }
+
+        .themeButtons {
+            text-align: center;
+            margin: 10px 0;
+        }
+
+        .splitchattable, .splitstatetable {
+            width: 100%;
+            max-width: 900px;
+            margin: 20px auto;
+            padding: 20px;
+            background-color: #1e1e1e;
+            border-radius: 12px;
+            box-shadow: 0 0 20px rgba(255, 0, 80, 0.3);
+        }
+
+        .containerheader {
+            font-size: 1.3em;
+            margin-bottom: 10px;
+        }
+
+        #chatbox {
+            min-height: 200px;
+            background: #2a2a2a;
+            padding: 10px;
+            border-radius: 10px;
+        }
+
+        footer {
+            text-align: center;
+            padding: 20px;
+            font-size: 0.9em;
+            color: #aaa;
+            border-top: 1px solid #333;
+            margin-top: 40px;
+        }
+    </style>
+</head>
+
+<body>
+
+    <div class="inputFields">
+        <input type="text" placeholder="@tuusuario" id="uniqueIdInput" value="@melserngl">
+        <input type="button" id="connectButton" value="Conectar">
+    </div>
+
+    <div class="themeButtons">
+        <button onclick="changeTheme('theme-light')">Tema Claro</button>
+        <button onclick="changeTheme('theme-dark')">Tema Oscuro</button>
+    </div>
+
+    <div class="splitchattable">
+        <div class="chatcontainer">
+            <h3 class="containerheader">Chats</h3>
+            <div id="chatbox"></div>
+        </div>
+        <div class="giftcontainer">
+            <h3 class="containerheader">Gifts</h3>
+        </div>
+    </div>
+
+    <table class="splitstatetable">
+        <tr><td><div id="stateText"></div></td></tr>
+        <tr><td><div id="roomStats"></div></td></tr>
+    </table>
+
+    <div style="text-align:center;">
+        <audio id="audio" controls autoplay></audio>
+        <input id="skip-button" type="button" value="SKIP"><br/>
+        <div id="voiceSelectContainer"></div>
+    </div>
+
+    <audio id="soundPlayer" src="" type="audio/mp3"></audio>
+
+    <form id="soundForm" class="inputFields">
+        <input type="file" id="soundFiles" multiple>
+        <button type="submit">Añadir sonido</button>
+    </form>
+
+    <div class="inputFields">
+        <input type="file" id="importButton">
+        <button onclick="importSettings()">ImportarCONFIG</button>
+        <button id="exportButton" onclick="exportSettings()">ExportarCONFIG</button>
+    </div>
+
+    <div class="inputFields">
+        <label for="filter-words">Filtrar palabras (separadas por espacio):</label>
+        <input type="text" id="filter-words">
+    </div>
+
+    <span id="loadingIndicator" style="display: none;">Cargando...</span>
+    <ul id="soundList"></ul>
+
+    <footer>
+        Desarrollado por <strong>Alliance Holding LLC</strong>
+    </footer>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.4.1/socket.io.min.js"></script>
+    <script src="connection.js"></script>
+    <script src="app.js"></script>
+    <script src="tmi.min.js"></script>
+    <script src="TTSmain.js"></script>
+
+    <script>
+        function changeTheme(theme) {
+            document.body.className = theme;
+        }
+
+        const uniqueIdInput = document.getElementById('uniqueIdInput');
+        const connectButton = document.getElementById('connectButton');
+        const filterWordsInput = document.getElementById('filter-words');
+
+        const lastValue = localStorage.getItem('lastValue');
+        if (lastValue) uniqueIdInput.value = lastValue;
+
+        connectButton?.addEventListener('click', () => {
+            const currentValue = uniqueIdInput.value;
+            if (currentValue) localStorage.setItem('lastValue', currentValue);
+        });
+
+        const lastFilterWords = localStorage.getItem('lastFilterWords');
+        if (lastFilterWords) filterWordsInput.value = lastFilterWords;
+
+        filterWordsInput.addEventListener('change', () => {
+            const currentFilterWords = filterWordsInput.value;
+            if (currentFilterWords) localStorage.setItem('lastFilterWords', currentFilterWords);
+        });
+    </script>
+
+</body>
+</html>
